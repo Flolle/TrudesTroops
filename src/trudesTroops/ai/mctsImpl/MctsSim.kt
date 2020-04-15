@@ -1,0 +1,17 @@
+package trudesTroops.ai.mctsImpl
+
+import trudesTroops.ai.mcts.Mcts
+import trudesTroops.game.Card
+
+object MctsSim {
+    fun getBestAssumedCardPick(
+        playerDeck: List<Card> = emptyList(),
+        opponentDeck: List<Card> = emptyList(),
+        runtimeInMilliseconds: Int
+    ): Card =
+        Mcts.getBestAssumedMoveWithTimeLimit(
+            AAState(Player.PLAYER1, playerDeck, opponentDeck),
+            AAPlayoutHandler,
+            runtimeInMilliseconds
+        )
+}
