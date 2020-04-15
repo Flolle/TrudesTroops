@@ -1,5 +1,8 @@
 Welcome to Trude's Troops, a short card/auto battler game.
 
+- [Roadmap and game's roots](https://github.com/Flolle/TrudesTroops/wiki)
+- [Game rules and card list](https://github.com/Flolle/TrudesTroops/wiki/Game-rules)
+
 # License
 
 ```
