@@ -4,22 +4,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-// P is player
+// A is agent
 // M is move
 // S is state
-class TreeNode<P, M, S : State<P, M, S>> private constructor(
-    val parent: TreeNode<P, M, S>?,
-    val children: MutableList<TreeNode<P, M, S>> = ArrayList(),
+class TreeNode<A, M, S : State<A, M, S>> private constructor(
+    val parent: TreeNode<A, M, S>?,
+    val children: MutableList<TreeNode<A, M, S>> = ArrayList(),
     val actionTaken: M?,
-    val actionByPlayer: P,
+    val actionByAgent: A,
     val state: S
 ) {
     companion object {
-        fun <P, M, S : State<P, M, S>> rootNode(startingState: S): TreeNode<P, M, S> =
+        fun <A, M, S : State<A, M, S>> rootNode(startingState: S): TreeNode<A, M, S> =
             TreeNode(
                 parent = null,
                 actionTaken = null,
-                actionByPlayer = startingState.currentPlayer,
+                actionByAgent = startingState.currentAgent,
                 state = startingState
             )
     }
@@ -49,13 +49,13 @@ class TreeNode<P, M, S : State<P, M, S>> private constructor(
 
     fun getUntriedAction(): M = untriedActions[triedActionCounter++]
 
-    fun addChildWithAction(action: M): TreeNode<P, M, S> {
-        val newState = state.playMove(action)
+    fun addChildWithAction(action: M): TreeNode<A, M, S> {
+        val newState = state.makeMove(action)
         val childNode =
             TreeNode(
                 parent = this,
                 actionTaken = action,
-                actionByPlayer = state.currentPlayer,
+                actionByAgent = state.currentAgent,
                 state = newState
             )
         childrenLock.write { children.add(childNode) }

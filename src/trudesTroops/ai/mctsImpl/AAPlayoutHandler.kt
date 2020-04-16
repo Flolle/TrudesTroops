@@ -12,7 +12,7 @@ object AAPlayoutHandler : PlayoutHandler<Player, Card, AAState> {
         var currentState = state
         while (!currentState.isTerminal) {
             val move = findNthMoveInCollection(rng.nextInt(currentState.possibleMoves.size), currentState.possibleMoves)
-            currentState = currentState.playMove(move)
+            currentState = currentState.makeMove(move)
         }
 
         return currentState
@@ -27,14 +27,14 @@ object AAPlayoutHandler : PlayoutHandler<Player, Card, AAState> {
         error("n is bigger than collection!")
     }
 
-    override fun getTerminalStateReward(terminalState: AAState, playerPerspective: Player): Double {
+    override fun getTerminalStateReward(terminalState: AAState, agentPerspective: Player): Double {
         val playerDeck =
-            if (terminalState.currentPlayer == playerPerspective)
+            if (terminalState.currentAgent == agentPerspective)
                 terminalState.currentPlayerDeck
             else
                 terminalState.nextPlayerDeck
         val opponentDeck =
-            if (terminalState.currentPlayer == playerPerspective)
+            if (terminalState.currentAgent == agentPerspective)
                 terminalState.nextPlayerDeck
             else
                 terminalState.currentPlayerDeck

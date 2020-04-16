@@ -14,17 +14,17 @@ fun main(args: Array<String>) {
         return
     }
 
-    var timePerTurn = 500
-    var aiPlayer = AIPlayer.GENETIC_ALGORITHM
-    if (args.contains("-timePerTurn"))
-        timePerTurn = args[args.indexOf("-timePerTurn") + 1].toInt()
-    if (args.contains("-aiAlgorithm") && args[args.indexOf("-aiAlgorithm") + 1] == "mcts")
-        aiPlayer = AIPlayer.MCTS_ALGORITHM
+    var difficulty = Difficulty.MEDIUM
+    if (args.contains("-difficulty"))
+        difficulty = when (args[args.indexOf("-difficulty") + 1].toLowerCase(Locale.ENGLISH)) {
+            "easy"      -> Difficulty.EASY
+            "medium"    -> Difficulty.MEDIUM
+            "hard"      -> Difficulty.HARD
+            "very_hard" -> Difficulty.VERY_HARD
+            else        -> error("Invalid difficulty setting!")
+        }
 
-    PlayGameCLI.playGame(
-        aiMillisecondsPerTurn = timePerTurn,
-        aiPlayer = aiPlayer
-    )
+    PlayGameCLI.playGame(difficulty)
 }
 
 fun debug() {

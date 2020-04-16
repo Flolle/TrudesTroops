@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AAState(
-    override val currentPlayer: Player,
+    override val currentAgent: Player,
     val currentPlayerDeck: List<Card>,
     val nextPlayerDeck: List<Card>
 ) : State<Player, Card, AAState> {
@@ -19,9 +19,9 @@ class AAState(
         else                        -> EnumSet.complementOf(EnumSet.copyOf(currentPlayerDeck))
     }
 
-    override fun playMove(move: Card): AAState =
+    override fun makeMove(move: Card): AAState =
         AAState(
-            if (currentPlayer == Player.PLAYER1) Player.PLAYER2 else Player.PLAYER1,
+            if (currentAgent == Player.PLAYER1) Player.PLAYER2 else Player.PLAYER1,
             nextPlayerDeck,
             ArrayList(currentPlayerDeck).apply { add(move) }
         )

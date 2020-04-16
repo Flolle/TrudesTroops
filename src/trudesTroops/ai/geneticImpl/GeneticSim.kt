@@ -24,7 +24,7 @@ object GeneticSim {
 
     fun getBestAssumedCardPickTimeLimit(
         timeLimitInMilliseconds: Int,
-        numberOfIterationsPerGeneration: Int = 300,
+        numberOfIterationsPerGeneration: Int = 100,
         fitnessOption: FitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
         playerDeck: List<Card> = emptyList(),
         opponentDeck: List<Card> = emptyList()
@@ -51,7 +51,7 @@ object GeneticSim {
     }
 
     fun getBestAssumedCardPick(
-        numberOfIterationsPerGeneration: Int = 300,
+        numberOfIterationsPerGeneration: Int = 100,
         numberOfGenerations: Int = 10,
         fitnessOption: FitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
         playerDeck: List<Card> = emptyList(),

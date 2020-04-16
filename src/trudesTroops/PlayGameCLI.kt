@@ -9,9 +9,8 @@ import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 object PlayGameCLI {
-    fun playGame(aiMillisecondsPerTurn: Int, aiPlayer: AIPlayer) {
-        println("AI allotted milliseconds per turn: $aiMillisecondsPerTurn")
-        println("AI algorithm: $aiPlayer\n")
+    fun playGame(difficulty: Difficulty) {
+        println("Difficulty: $difficulty")
         Card.values().forEach { println("${it.ordinal}: $it") }
         println()
 
@@ -21,20 +20,34 @@ object PlayGameCLI {
         try {
             repeat(6) {
                 val aiResult = executor.submit<Card> {
-                    if (aiPlayer == AIPlayer.MCTS_ALGORITHM)
-                        MctsSim.getBestAssumedCardPick(
-                            playerDeck = aiDeck,
-                            opponentDeck = playerDeck,
-                            runtimeInMilliseconds = aiMillisecondsPerTurn
-                        )
-                    else
-                        GeneticSim.getBestAssumedCardPickTimeLimit(
-                            timeLimitInMilliseconds = aiMillisecondsPerTurn,
-                            numberOfIterationsPerGeneration = 400,
+                    when (difficulty) {
+                        Difficulty.EASY -> GeneticSim.getBestAssumedCardPick(
+                            numberOfGenerations = 2,
+                            numberOfIterationsPerGeneration = 50,
                             fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
                             playerDeck = aiDeck,
                             opponentDeck = playerDeck
                         )
+                        Difficulty.MEDIUM -> GeneticSim.getBestAssumedCardPick(
+                            numberOfGenerations = 3,
+                            numberOfIterationsPerGeneration = 100,
+                            fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
+                            playerDeck = aiDeck,
+                            opponentDeck = playerDeck
+                        )
+                        Difficulty.HARD -> GeneticSim.getBestAssumedCardPick(
+                            numberOfGenerations = 6,
+                            numberOfIterationsPerGeneration = 100,
+                            fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
+                            playerDeck = aiDeck,
+                            opponentDeck = playerDeck
+                        )
+                        Difficulty.VERY_HARD -> MctsSim.getBestAssumedCardPick(
+                            playerDeck = aiDeck,
+                            opponentDeck = playerDeck,
+                            runtimeInMilliseconds = 2000
+                        )
+                    }
                 }
 
                 println("\n##################################################\n")
@@ -120,6 +133,6 @@ object PlayGameCLI {
     }
 }
 
-enum class AIPlayer {
-    MCTS_ALGORITHM, GENETIC_ALGORITHM
+enum class Difficulty {
+    EASY, MEDIUM, HARD, VERY_HARD
 }
