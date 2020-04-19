@@ -10,7 +10,9 @@ import kotlin.system.exitProcess
 
 object PlayGameCLI {
     fun playGame(difficulty: Difficulty) {
-        println("Difficulty: $difficulty")
+        println("Difficulty: $difficulty\n")
+        println("For the game's rules or a card list with all stats and abilities visit the following website:")
+        println("https://github.com/Flolle/TrudesTroops/wiki/Game-rules\n")
         Card.values().forEach { println("${it.ordinal}: $it") }
         println()
 
@@ -21,21 +23,21 @@ object PlayGameCLI {
             repeat(6) {
                 val aiResult = executor.submit<Card> {
                     when (difficulty) {
-                        Difficulty.EASY -> GeneticSim.getBestAssumedCardPick(
+                        Difficulty.EASY      -> GeneticSim.getBestAssumedCardPick(
                             numberOfGenerations = 2,
                             numberOfIterationsPerGeneration = 50,
                             fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
                             playerDeck = aiDeck,
                             opponentDeck = playerDeck
                         )
-                        Difficulty.MEDIUM -> GeneticSim.getBestAssumedCardPick(
+                        Difficulty.MEDIUM    -> GeneticSim.getBestAssumedCardPick(
                             numberOfGenerations = 3,
                             numberOfIterationsPerGeneration = 100,
                             fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
                             playerDeck = aiDeck,
                             opponentDeck = playerDeck
                         )
-                        Difficulty.HARD -> GeneticSim.getBestAssumedCardPick(
+                        Difficulty.HARD      -> GeneticSim.getBestAssumedCardPick(
                             numberOfGenerations = 6,
                             numberOfIterationsPerGeneration = 100,
                             fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
@@ -54,7 +56,7 @@ object PlayGameCLI {
 
                 var input: String? = null
                 while (input == null) {
-                    print("Select your next unit:")
+                    print("Select your next card (type in the card's number):")
                     input = readLine()
                     // Ctrl+C seems to result in a null value, so we print a short message and exit the program in that case.
                     if (input == null) {
@@ -100,7 +102,7 @@ object PlayGameCLI {
                 val playerCardName = playerRanks[rank].toString()
                 println(playerCardName.padEnd(20) + aiRanks[rank])
             } else {
-                println("empty               empty")
+                println("empty".padEnd(20) + "empty")
             }
         }
         println()

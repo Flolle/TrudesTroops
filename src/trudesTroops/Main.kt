@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
         return
     }
 
-    var difficulty = Difficulty.MEDIUM
+    var difficulty = Difficulty.EASY
     if (args.contains("-difficulty"))
         difficulty = when (args[args.indexOf("-difficulty") + 1].toLowerCase(Locale.ENGLISH)) {
             "easy"      -> Difficulty.EASY
