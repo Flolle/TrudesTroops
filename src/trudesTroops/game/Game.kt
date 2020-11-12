@@ -3,11 +3,7 @@ package trudesTroops.game
 import kotlin.math.ceil
 import kotlin.math.max
 
-class Game(
-    private var firstPlayerCards: List<CardInstance>,
-    private var secondPlayerCards: List<CardInstance>
-) {
-
+class Game(player1Deck: List<Card>, player2Deck: List<Card>) {
     companion object {
         fun addNewRank(
             player1Card: Card,
@@ -43,7 +39,7 @@ class Game(
             for (i in player1Deck.indices)
                 addNewRank(player1Deck[i], deck1, player2Deck[i], deck2)
 
-            return Game(deck1.map { it.getCardInstance() }, deck2.map { it.getCardInstance() }).playGame()
+            return Game(deck1, deck2).playGame()
         }
 
         fun computeGameWithTurnByTurnSummary(
@@ -55,24 +51,27 @@ class Game(
             for (i in player1Deck.indices)
                 addNewRank(player1Deck[i], deck1, player2Deck[i], deck2)
 
-
             return Pair(
-                Game(deck1.map { it.getCardInstance() }, deck2.map { it.getCardInstance() }).playGame(),
-                Game(deck1.map { it.getCardInstance() }, deck2.map { it.getCardInstance() }).getTurnByTurnSummary()
+                Game(deck1, deck2).playGame(),
+                Game(deck1, deck2).getTurnByTurnSummary()
             )
         }
     }
 
+    private val deck1: Deck = Deck(player1Deck)
+
+    private val deck2: Deck = Deck(player2Deck)
+
     private var turnNumber: Int = 1
 
     private val isGameFinished: Boolean
-        get() = firstPlayerCards.isEmpty() || secondPlayerCards.isEmpty()
+        get() = deck1.isEmpty || deck2.isEmpty
 
     private val isFirstPlayerWon: Boolean
-        get() = firstPlayerCards.isNotEmpty() && secondPlayerCards.isEmpty()
+        get() = !deck1.isEmpty && deck2.isEmpty
 
     private val isSecondPlayerWon: Boolean
-        get() = firstPlayerCards.isEmpty() && secondPlayerCards.isNotEmpty()
+        get() = deck1.isEmpty && !deck2.isEmpty
 
     fun playGame(): GameResult {
         if (isGameFinished)
@@ -82,23 +81,23 @@ class Game(
         cannonballHandling()
 
         // Do the actual turn loop, but use an escape hatch in case both decks cancel each other out.
-        var p1Ranks = firstPlayerCards.size
-        var p2Ranks = secondPlayerCards.size
+        var p1Ranks = deck1.ranks
+        var p2Ranks = deck2.ranks
         var noCardDiedCounter = 0
         while (!isGameFinished) {
             playTurn()
 
-            if (firstPlayerCards.size == p1Ranks && secondPlayerCards.size == p2Ranks) {
+            if (deck1.ranks == p1Ranks && deck2.ranks == p2Ranks) {
                 noCardDiedCounter++
             } else {
                 noCardDiedCounter = 0
-                p1Ranks = firstPlayerCards.size
-                p2Ranks = secondPlayerCards.size
+                p1Ranks = deck1.ranks
+                p2Ranks = deck2.ranks
             }
 
             if (noCardDiedCounter > 10) {
-                firstPlayerCards = firstPlayerCards.drop(1)
-                secondPlayerCards = secondPlayerCards.drop(1)
+                deck1.removeCardAtRank(1)
+                deck2.removeCardAtRank(1)
                 noCardDiedCounter = 0
             }
         }
@@ -119,48 +118,48 @@ class Game(
             throw IllegalStateException("Cannot create turn by turn summary for finished game states!")
 
         val gameStates = ArrayList<GameState>()
-        gameStates.add(GameState(firstPlayerCards.map { it.copy() }, secondPlayerCards.map { it.copy() }))
+        gameStates.add(GameState(deck1.toList(), deck2.toList()))
 
         // Cannonball handling happens before the actual turns start.
         cannonballHandling()
 
         // Do the actual turn loop, but use an escape hatch in case both decks cancel each other out.
-        var p1Ranks = firstPlayerCards.size
-        var p2Ranks = secondPlayerCards.size
+        var p1Ranks = deck1.ranks
+        var p2Ranks = deck2.ranks
         var noCardDiedCounter = 0
         while (!isGameFinished) {
             playTurn()
 
-            if (firstPlayerCards.size == p1Ranks && secondPlayerCards.size == p2Ranks) {
+            if (deck1.ranks == p1Ranks && deck2.ranks == p2Ranks) {
                 noCardDiedCounter++
             } else {
                 noCardDiedCounter = 0
-                p1Ranks = firstPlayerCards.size
-                p2Ranks = secondPlayerCards.size
+                p1Ranks = deck1.ranks
+                p2Ranks = deck2.ranks
             }
 
             if (noCardDiedCounter > 10) {
-                firstPlayerCards = firstPlayerCards.drop(1)
-                secondPlayerCards = secondPlayerCards.drop(1)
+                deck1.removeCardAtRank(1)
+                deck2.removeCardAtRank(1)
                 noCardDiedCounter = 0
             }
 
-            gameStates.add(GameState(firstPlayerCards.map { it.copy() }, secondPlayerCards.map { it.copy() }))
+            gameStates.add(GameState(deck1.toList(), deck2.toList()))
         }
 
         return gameStates
     }
 
     private fun cannonballHandling() {
-        val player1CannonballIndex = firstPlayerCards.indexOfFirst { it is Cannonball }
-        if (player1CannonballIndex >= 0) {
-            firstPlayerCards = firstPlayerCards.filterIndexed { index, _ -> index != player1CannonballIndex }
-            secondPlayerCards = secondPlayerCards.filterIndexed { index, _ -> index != player1CannonballIndex }
+        val cball1Rank = deck1.findRankOfType<Cannonball>()
+        if (cball1Rank != -1) {
+            deck1.removeCardAtRank(cball1Rank)
+            deck2.removeCardAtRank(cball1Rank)
         }
-        val player2CannonballIndex = secondPlayerCards.indexOfFirst { it is Cannonball }
-        if (player2CannonballIndex >= 0) {
-            firstPlayerCards = firstPlayerCards.filterIndexed { index, _ -> index != player2CannonballIndex }
-            secondPlayerCards = secondPlayerCards.filterIndexed { index, _ -> index != player2CannonballIndex }
+        val cball2Rank = deck2.findRankOfType<Cannonball>()
+        if (cball2Rank != -1) {
+            deck1.removeCardAtRank(cball2Rank)
+            deck2.removeCardAtRank(cball2Rank)
         }
     }
 
@@ -176,45 +175,46 @@ class Game(
     private fun playTurn() {
         applyBaseAttacks()
 
-        applySpecialAttack(firstPlayerCards, secondPlayerCards)
-        applySpecialAttack(secondPlayerCards, firstPlayerCards)
+        applySpecialAttack(deck1, deck2)
+        applySpecialAttack(deck2, deck1)
 
-        if (firstPlayerCards.any { it is Sniper })
-            applyAttackToDefendingTargetPosition(1, secondPlayerCards.lastIndex, secondPlayerCards)
-        if (secondPlayerCards.any { it is Sniper })
-            applyAttackToDefendingTargetPosition(1, firstPlayerCards.lastIndex, firstPlayerCards)
+        if (deck1.any { it is Sniper })
+            applyAttackToDefendingTargetRank(1, deck2.ranks, deck2)
+        if (deck2.any { it is Sniper })
+            applyAttackToDefendingTargetRank(1, deck1.ranks, deck1)
 
-        removeKilledCards()
+        deck1.removeKilledCards()
+        deck2.removeKilledCards()
         if (isGameFinished)
             return
 
-        applyHealing(firstPlayerCards)
-        applyHealing(secondPlayerCards)
+        applyHealing(deck1)
+        applyHealing(deck2)
 
         turnNumber++
     }
 
     private fun applyBaseAttacks() {
-        val player1BaseAttack = calculateBaseAttack(firstPlayerCards)
-        val player2BaseAttack = calculateBaseAttack(secondPlayerCards)
-        applyAttackToDefendingTargetPosition(player1BaseAttack, 0, secondPlayerCards)
-        applyAttackToDefendingTargetPosition(player2BaseAttack, 0, firstPlayerCards)
+        val player1BaseAttack = calculateBaseAttack(deck1)
+        val player2BaseAttack = calculateBaseAttack(deck2)
+        applyAttackToDefendingTargetRank(player1BaseAttack, 1, deck2)
+        applyAttackToDefendingTargetRank(player2BaseAttack, 1, deck1)
 
-        val player1First = firstPlayerCards[0]
-        val player2First = secondPlayerCards[0]
+        val player1First = deck1.firstRank!!.thisOrMartyr().card
+        val player2First = deck2.firstRank!!.thisOrMartyr().card
 
         if (player1First is Gladiator)
-            applyAttackToDefendingTargetPosition(ceil(player2BaseAttack / 2.0).toInt(), 0, secondPlayerCards)
+            applyAttackToDefendingTargetRank(ceil(player2BaseAttack / 2.0).toInt(), 1, deck2)
         if (player2First is Gladiator)
-            applyAttackToDefendingTargetPosition(ceil(player1BaseAttack / 2.0).toInt(), 0, firstPlayerCards)
+            applyAttackToDefendingTargetRank(ceil(player1BaseAttack / 2.0).toInt(), 1, deck1)
     }
 
-    private fun calculateBaseAttack(attackerCards: List<CardInstance>): Int {
-        val attackerRank1Card = attackerCards[0]
+    private fun calculateBaseAttack(attackerCards: Deck): Int {
+        val attackerRank1Card = attackerCards.firstRank!!.card
 
         var attackerBaseAttack = attackerRank1Card.baseAttack
-        if (attackerCards.size > 1) {
-            val p1Rank2Card = attackerCards[1]
+        attackerCards.firstRank?.nextRank?.also {
+            val p1Rank2Card = it.card
             if (p1Rank2Card is Page) {
                 attackerBaseAttack++
             } else if (attackerBaseAttack > 0 && p1Rank2Card is MadScientist) {
@@ -226,78 +226,70 @@ class Game(
         return attackerBaseAttack
     }
 
-    private fun applySpecialAttack(attackerCards: List<CardInstance>, defenderCards: List<CardInstance>) {
-        val attackerRank1Card = attackerCards[0] as? AttackSpecial ?: return
+    private fun applySpecialAttack(attackerCards: Deck, defenderCards: Deck) {
+        val attackerRank1Card = attackerCards.firstRank?.card as? AttackSpecial ?: return
 
         when (attackerRank1Card) {
             is Alchemist ->
                 if (turnNumber % 2 == 1)
-                    applyAttackToDefendingTargetPosition(2, 0, defenderCards)
+                    applyAttackToDefendingTargetRank(2, 1, defenderCards)
                 else
-                    applyAttackToDefendingTargetPosition(4, 0, defenderCards)
+                    applyAttackToDefendingTargetRank(4, 1, defenderCards)
             is Hammerman ->
-                applyAttackToDefendingTargetPosition(
-                    ceil(defenderCards[0].maxHP / 2.0).toInt(),
-                    0,
+                applyAttackToDefendingTargetRank(
+                    ceil(defenderCards.firstRank!!.card.maxHP / 2.0).toInt(),
+                    1,
                     defenderCards
                 )
-            is Bowman    ->
-                if (defenderCards.size > 1)
-                    applyAttackToDefendingTargetPosition(3, 1, defenderCards)
-            is Lanceman  ->
-                if (defenderCards.size == 2)
-                    applyAttackToDefendingTargetPosition(1, 1, defenderCards)
-                else if (defenderCards.size > 2) {
-                    applyAttackToDefendingTargetPosition(1, 1, defenderCards)
-                    applyAttackToDefendingTargetPosition(1, 2, defenderCards)
-                }
-            is Mage      -> {
-                applyAttackToDefendingTargetPosition(3, 0, defenderCards)
-                if (defenderCards.size > 1)
-                    applyAttackToDefendingTargetPosition(2, 1, defenderCards)
-                if (defenderCards.size > 2)
-                    applyAttackToDefendingTargetPosition(2, 2, defenderCards)
+            is Bowman ->
+                if (defenderCards.ranks > 1)
+                    applyAttackToDefendingTargetRank(3, 2, defenderCards)
+            is Lanceman -> {
+                if (defenderCards.ranks > 1)
+                    applyAttackToDefendingTargetRank(1, 2, defenderCards)
+                if (defenderCards.ranks > 2)
+                    applyAttackToDefendingTargetRank(1, 3, defenderCards)
             }
-            is Dervish   -> {
-                if (attackerCards.size > 1)
-                    applyAttackToDefendingTargetPosition(3, 1, attackerCards)
-                if (defenderCards.size > 1)
-                    applyAttackToDefendingTargetPosition(3, 1, defenderCards)
+            is Mage -> {
+                applyAttackToDefendingTargetRank(3, 1, defenderCards)
+                if (defenderCards.ranks > 1)
+                    applyAttackToDefendingTargetRank(2, 2, defenderCards)
+                if (defenderCards.ranks > 2)
+                    applyAttackToDefendingTargetRank(2, 3, defenderCards)
+            }
+            is Dervish -> {
+                if (attackerCards.ranks > 1)
+                    applyAttackToDefendingTargetRank(3, 2, attackerCards)
+                if (defenderCards.ranks > 1)
+                    applyAttackToDefendingTargetRank(3, 2, defenderCards)
             }
             is MadBomber -> {
-                var attackerIndex = attackerCards.lastIndex
-                while (attackerIndex >= 0)
-                    applyAttackToDefendingTargetPosition(1, attackerIndex--, attackerCards)
+                var attackerIndex = attackerCards.ranks
+                while (attackerIndex > 0)
+                    applyAttackToDefendingTargetRank(1, attackerIndex--, attackerCards)
 
-                var defenderIndex = defenderCards.lastIndex
-                while (defenderIndex >= 0)
-                    applyAttackToDefendingTargetPosition(1, defenderIndex--, defenderCards)
+                var defenderIndex = defenderCards.ranks
+                while (defenderIndex > 0)
+                    applyAttackToDefendingTargetRank(1, defenderIndex--, defenderCards)
             }
             else         -> error("Unhandled AttackSpecial card: $attackerRank1Card")
         }
     }
 
-    private fun applyAttackToDefendingTargetPosition(
+    private fun applyAttackToDefendingTargetRank(
         attackBaseValue: Int,
-        defendingTargetPosition: Int,
-        defenderCards: List<CardInstance>
+        defendingTargetRank: Int,
+        defenderCards: Deck
     ) {
-        val positionBehind = defendingTargetPosition + 1
-        val actualTargetPosition =
-            if (defenderCards.size > positionBehind && defenderCards[positionBehind] is Martyr)
-                positionBehind
-            else
-                defendingTargetPosition
+        val defendingCardElement = defenderCards.getCardAtRank(defendingTargetRank)!!.thisOrMartyr()
 
         var attackValue = attackBaseValue
-        val defendingCard = defenderCards[actualTargetPosition]
+        val defendingCard = defendingCardElement.card
 
         if (attackValue > 0) {
-            if (defenderCards.size > actualTargetPosition + 1) {
-                val cardBehindDefender = defenderCards[actualTargetPosition + 1]
-                if (cardBehindDefender is Shieldmaiden)
-                    attackValue = max(attackValue - 1, 1)
-            }
+            val nextCard = defendingCardElement.nextRank
+            if (nextCard != null && nextCard.card is Shieldmaiden)
+                attackValue = max(attackValue - 1, 1)
 
             if (defendingCard is Shieldbot && defendingCard.hasShield)
                 defendingCard.hasShield = false
@@ -306,51 +298,36 @@ class Game(
         }
     }
 
-    private fun applyHealing(playerCards: List<CardInstance>) {
-        playerCards.forEachIndexed { index, card ->
-            if (card is HealingSpecial)
-                when (card) {
+    private fun applyHealing(playerCards: Deck) {
+        playerCards.forEachCardElement { cardElement ->
+            if (cardElement.card is HealingSpecial) {
+                when (cardElement.card) {
                     is Vampire -> {
-                        if (index == 0)
-                            card.heal(1)
+                        if (playerCards.firstRank == cardElement)
+                            cardElement.card.heal(1)
                     }
-                    is Nurse   -> {
-                        val previousCard = if (index > 0) playerCards[index - 1] else null
-                        val nextCard = if (index < playerCards.lastIndex) playerCards[index + 1] else null
-                        previousCard?.heal(1)
-                        nextCard?.heal(1)
+                    is Nurse -> {
+                        cardElement.previousRank?.card?.heal(1)
+                        cardElement.nextRank?.card?.heal(1)
                     }
-                    is Medic   -> {
-                        var i = 0
-                        while (i < playerCards.size && playerCards[i].currentHP == playerCards[i].maxHP)
-                            i++
-                        if (i < playerCards.size)
-                            playerCards[i].heal(1)
+                    is Medic -> {
+                        var index = playerCards.firstRank
+                        while (index != null && index.card.currentHP == index.card.maxHP)
+                            index = index.nextRank
+
+                        index?.card?.heal(1)
                     }
-                    is Cleric  -> {
-                        var i = playerCards.lastIndex
-                        while (i >= 0 && playerCards[i].currentHP == playerCards[i].maxHP)
-                            i--
-                        if (i >= 0)
-                            playerCards[i].heal(1)
+                    is Cleric -> {
+                        var index = playerCards.lastRank
+                        while (index != null && index.card.currentHP == index.card.maxHP)
+                            index = index.previousRank
+
+                        index?.card?.heal(1)
                     }
-                    else       -> error("Unhandled HealingSpecial card: $card")
+                    else       -> error("Unhandled HealingSpecial card: ${cardElement.card}")
                 }
+            }
         }
-    }
-
-    private fun removeKilledCards() {
-        val firstPlayer = ArrayList<CardInstance>(5)
-        for (card in firstPlayerCards)
-            if (card.currentHP > 0)
-                firstPlayer.add(card)
-        firstPlayerCards = firstPlayer
-
-        val secondPlayer = ArrayList<CardInstance>(5)
-        for (card in secondPlayerCards)
-            if (card.currentHP > 0)
-                secondPlayer.add(card)
-        secondPlayerCards = secondPlayer
     }
 }
 

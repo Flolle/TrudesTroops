@@ -47,7 +47,7 @@ object PlayGameCLI {
                         Difficulty.VERY_HARD -> MctsSim.getBestAssumedCardPick(
                             playerDeck = aiDeck,
                             opponentDeck = playerDeck,
-                            runtimeInMilliseconds = 2000
+                            runtimeInMilliseconds = 1500
                         )
                     }
                 }

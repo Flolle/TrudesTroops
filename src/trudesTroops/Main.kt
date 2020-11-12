@@ -17,9 +17,9 @@ fun main(args: Array<String>) {
     var difficulty = Difficulty.EASY
     if (args.contains("-difficulty"))
         difficulty = when (args[args.indexOf("-difficulty") + 1].toLowerCase(Locale.ENGLISH)) {
-            "easy"      -> Difficulty.EASY
-            "medium"    -> Difficulty.MEDIUM
-            "hard"      -> Difficulty.HARD
+            "easy" -> Difficulty.EASY
+            "medium" -> Difficulty.MEDIUM
+            "hard" -> Difficulty.HARD
             "very_hard" -> Difficulty.VERY_HARD
             else        -> error("Invalid difficulty setting!")
         }
@@ -35,7 +35,7 @@ fun debug() {
         when (runTestPlayout()) {
             GameResult.PLAYER1_WON -> playoutResults.wins++
             GameResult.PLAYER2_WON -> playoutResults.losses++
-            GameResult.DRAW        -> playoutResults.draws++
+            GameResult.DRAW -> playoutResults.draws++
         }
         println()
     }
