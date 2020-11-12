@@ -291,6 +291,9 @@ class Game(player1Deck: List<Card>, player2Deck: List<Card>) {
             if (nextCard != null && nextCard.card is Shieldmaiden)
                 attackValue = max(attackValue - 1, 1)
 
+            if (defendingCard is Guard)
+                attackValue = max(attackValue - 1, 1)
+
             if (defendingCard is Shieldbot && defendingCard.hasShield)
                 defendingCard.hasShield = false
             else

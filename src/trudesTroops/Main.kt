@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
 }
 
 fun debug() {
-    val numberOfPlayouts = 5
+    val numberOfPlayouts = 10
     val playoutResults = PlayoutResult()
     for (playoutNumber in 1..numberOfPlayouts) {
         println("Playout: $playoutNumber")
@@ -54,13 +54,15 @@ fun runTestPlayout(): GameResult {
             MctsSim.getBestAssumedCardPick(
                 playerDeck = player1,
                 opponentDeck = player2,
-                runtimeInMilliseconds = 500
+                runtimeInMilliseconds = 1500
             )
         val player2Pick =
-            /*MctsSim.getBestAssumedCardPick(
+            /*GeneticSim.getBestAssumedCardPick(
+                numberOfGenerations = 6,
+                numberOfIterationsPerGeneration = 100,
+                fitnessOption = FitnessOption.WINNING_AND_DRAWS_PARTIAL,
                 playerDeck = player2,
-                opponentDeck = player1,
-                runtimeInMilliseconds = 1_000
+                opponentDeck = player1
             )*/
             GeneticSim.getBestAssumedCardPickTimeLimit(
                 timeLimitInMilliseconds = 500,
