@@ -99,7 +99,7 @@ class Mcts<A, M, S : State<A, M, S>>(
 
     private fun getBestChild(node: TreeNode<A, M, S>, explorationParameter: Double): TreeNode<A, M, S> =
         node.childrenLock.read {
-            node.children.maxBy { calculateUctValue(it, explorationParameter) } ?: throw IllegalStateException()
+            node.children.maxByOrNull { calculateUctValue(it, explorationParameter) } ?: throw IllegalStateException()
         }
 
     private fun calculateUctValue(node: TreeNode<A, M, S>, explorationParameter: Double): Double =

@@ -47,7 +47,7 @@ object GeneticSim {
             opponentFitness = newFitness.opponentFitness
         }
 
-        return playerFitness[playerDeck.size].maxBy { it.value }!!.key
+        return playerFitness[playerDeck.size].maxByOrNull { it.value }!!.key
     }
 
     fun getBestAssumedCardPick(
@@ -70,7 +70,7 @@ object GeneticSim {
             opponentFitness = newFitness.opponentFitness
         }
 
-        return playerFitness[playerDeck.size].maxBy { it.value }!!.key
+        return playerFitness[playerDeck.size].maxByOrNull { it.value }!!.key
     }
 
     private fun createInitialFitness(preselectedDeck: List<Card>): Array<Map<Card, Int>> {
