@@ -42,4 +42,6 @@ interface State<A, M, S : State<A, M, S>> {
      * state.
      */
     fun makeMove(move: M): S
+
+    operator fun plus(move: M): S = makeMove(move)
 }

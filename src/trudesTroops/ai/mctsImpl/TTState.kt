@@ -23,7 +23,7 @@ class TTState(
         TTState(
             if (currentAgent == Player.PLAYER1) Player.PLAYER2 else Player.PLAYER1,
             nextPlayerDeck,
-            ArrayList(currentPlayerDeck).apply { add(move) }
+            currentPlayerDeck + move
         )
 }
 

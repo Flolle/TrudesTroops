@@ -13,7 +13,7 @@ object TTPlayoutHandler : PlayoutHandler<Player, Card, TTState> {
         while (!currentState.isTerminal) {
             val possibleMoves = currentState.possibleMoves
             val move = findNthMoveInCollection(rng.nextInt(possibleMoves.size), possibleMoves)
-            currentState = currentState.makeMove(move)
+            currentState += move
         }
 
         return currentState

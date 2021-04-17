@@ -50,15 +50,14 @@ class TreeNode<A, M, S : State<A, M, S>> private constructor(
     fun getUntriedAction(): M = untriedActions[triedActionCounter++]
 
     fun addChildWithAction(action: M): TreeNode<A, M, S> {
-        val newState = state.makeMove(action)
         val childNode =
             TreeNode(
                 parent = this,
                 actionTaken = action,
                 actionByAgent = state.currentAgent,
-                state = newState
+                state = state + action
             )
-        childrenLock.write { children.add(childNode) }
+        childrenLock.write { children += childNode }
 
         return childNode
     }

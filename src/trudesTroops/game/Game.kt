@@ -12,24 +12,24 @@ class Game(player1Deck: List<Card>, player2Deck: List<Card>) {
             player2CurrentDeck: MutableList<Card>
         ) {
             if (player1CurrentDeck.isEmpty()) {
-                player1CurrentDeck.add(player1Card)
-                player2CurrentDeck.add(player2Card)
+                player1CurrentDeck += player1Card
+                player2CurrentDeck += player2Card
                 return
             }
 
             if (player1Card == Card.Horseman || player2Card == Card.Siren) {
-                val lastCard = player1CurrentDeck.removeAt(player1CurrentDeck.lastIndex)
-                player1CurrentDeck.add(player1Card)
-                player1CurrentDeck.add(lastCard)
+                val lastCard = player1CurrentDeck.removeLast()
+                player1CurrentDeck += player1Card
+                player1CurrentDeck += lastCard
             } else {
-                player1CurrentDeck.add(player1Card)
+                player1CurrentDeck += player1Card
             }
             if (player2Card == Card.Horseman || player1Card == Card.Siren) {
-                val lastCard = player2CurrentDeck.removeAt(player2CurrentDeck.lastIndex)
-                player2CurrentDeck.add(player2Card)
-                player2CurrentDeck.add(lastCard)
+                val lastCard = player2CurrentDeck.removeLast()
+                player2CurrentDeck += player2Card
+                player2CurrentDeck += lastCard
             } else {
-                player2CurrentDeck.add(player2Card)
+                player2CurrentDeck += player2Card
             }
         }
 

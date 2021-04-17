@@ -72,8 +72,8 @@ object PlayGameCLI {
                 }
 
                 val inputNumber = input.trim().toInt()
-                aiDeck.add(aiResult.get())
-                playerDeck.add(Card.values()[inputNumber])
+                aiDeck += aiResult.get()
+                playerDeck += Card.values()[inputNumber]
 
                 println()
                 printRanks(playerDeck, aiDeck)
