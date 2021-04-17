@@ -6,8 +6,8 @@ import trudesTroops.game.Game
 import trudesTroops.game.GameResult
 import java.util.concurrent.ThreadLocalRandom
 
-object AAPlayoutHandler : PlayoutHandler<Player, Card, AAState> {
-    override fun playUntilTerminalStateReached(state: AAState): AAState {
+object TTPlayoutHandler : PlayoutHandler<Player, Card, TTState> {
+    override fun playUntilTerminalStateReached(state: TTState): TTState {
         val rng = ThreadLocalRandom.current()
         var currentState = state
         while (!currentState.isTerminal) {
@@ -28,7 +28,7 @@ object AAPlayoutHandler : PlayoutHandler<Player, Card, AAState> {
         error("n is bigger than collection!")
     }
 
-    override fun getTerminalStateReward(terminalState: AAState, agentPerspective: Player): Double {
+    override fun getTerminalStateReward(terminalState: TTState, agentPerspective: Player): Double {
         val playerDeck =
             if (terminalState.currentAgent == agentPerspective)
                 terminalState.currentPlayerDeck

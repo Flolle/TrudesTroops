@@ -10,8 +10,8 @@ object MctsSim {
         runtimeInMilliseconds: Int
     ): Card =
         Mcts.getBestAssumedMoveWithTimeLimit(
-            AAState(Player.PLAYER1, playerDeck, opponentDeck),
-            AAPlayoutHandler,
+            TTState(Player.PLAYER1, playerDeck, opponentDeck),
+            TTPlayoutHandler,
             runtimeInMilliseconds
         )
 }

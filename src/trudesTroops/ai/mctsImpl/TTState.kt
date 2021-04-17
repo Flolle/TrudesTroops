@@ -5,11 +5,11 @@ import trudesTroops.ai.mcts.State
 import trudesTroops.game.Card
 import java.util.*
 
-class AAState(
+class TTState(
     override val currentAgent: Player,
     val currentPlayerDeck: List<Card>,
     val nextPlayerDeck: List<Card>
-) : State<Player, Card, AAState> {
+) : State<Player, Card, TTState> {
     override val isTerminal: Boolean
         get() = currentPlayerDeck.size == 6 && nextPlayerDeck.size == 6
 
@@ -19,8 +19,8 @@ class AAState(
         else                        -> EnumSet.complementOf(EnumSet.copyOf(currentPlayerDeck))
     }
 
-    override fun makeMove(move: Card): AAState =
-        AAState(
+    override fun makeMove(move: Card): TTState =
+        TTState(
             if (currentAgent == Player.PLAYER1) Player.PLAYER2 else Player.PLAYER1,
             nextPlayerDeck,
             ArrayList(currentPlayerDeck).apply { add(move) }
