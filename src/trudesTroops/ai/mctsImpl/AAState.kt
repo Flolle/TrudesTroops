@@ -1,9 +1,9 @@
 package trudesTroops.ai.mctsImpl
 
+import trudesTroops.ai.GameHelper
 import trudesTroops.ai.mcts.State
 import trudesTroops.game.Card
 import java.util.*
-import kotlin.collections.ArrayList
 
 class AAState(
     override val currentAgent: Player,
@@ -15,7 +15,7 @@ class AAState(
 
     override val possibleMoves: EnumSet<Card> = when {
         currentPlayerDeck.size == 6 -> EnumSet.noneOf(Card::class.java)
-        currentPlayerDeck.isEmpty() -> reasonableFirstPositionCards
+        currentPlayerDeck.isEmpty() -> GameHelper.reasonableFirstPositionCards
         else                        -> EnumSet.complementOf(EnumSet.copyOf(currentPlayerDeck))
     }
 
@@ -25,24 +25,6 @@ class AAState(
             nextPlayerDeck,
             ArrayList(currentPlayerDeck).apply { add(move) }
         )
-
-    companion object {
-        private val cardsNeverOptimalInFirstPosition = EnumSet.of(
-            Card.Wallman,
-            Card.Cleric,
-            Card.Medic,
-            Card.Nurse,
-            Card.Shieldmaiden,
-            Card.MadScientist,
-            Card.Page,
-            Card.Martyr,
-            Card.Sniper,
-            Card.Horseman,
-            Card.Siren
-        )
-
-        private val reasonableFirstPositionCards = EnumSet.complementOf(cardsNeverOptimalInFirstPosition)
-    }
 }
 
 enum class Player {

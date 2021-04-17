@@ -11,7 +11,8 @@ object AAPlayoutHandler : PlayoutHandler<Player, Card, AAState> {
         val rng = ThreadLocalRandom.current()
         var currentState = state
         while (!currentState.isTerminal) {
-            val move = findNthMoveInCollection(rng.nextInt(currentState.possibleMoves.size), currentState.possibleMoves)
+            val possibleMoves = currentState.possibleMoves
+            val move = findNthMoveInCollection(rng.nextInt(possibleMoves.size), possibleMoves)
             currentState = currentState.makeMove(move)
         }
 

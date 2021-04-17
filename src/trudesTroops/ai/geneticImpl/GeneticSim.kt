@@ -1,27 +1,13 @@
 package trudesTroops.ai.geneticImpl
 
+import trudesTroops.ai.GameHelper
 import trudesTroops.game.Card
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.ArrayList
 
 object GeneticSim {
-    private val cardsNeverOptimalInFirstPosition = EnumSet.of(
-        Card.Wallman,
-        Card.Cleric,
-        Card.Medic,
-        Card.Nurse,
-        Card.Shieldmaiden,
-        Card.MadScientist,
-        Card.Page,
-        Card.Martyr,
-        Card.Sniper,
-        Card.Horseman,
-        Card.Siren
-    )
-
     fun getBestAssumedCardPickTimeLimit(
         timeLimitInMilliseconds: Int,
         numberOfIterationsPerGeneration: Int = 100,
@@ -90,7 +76,9 @@ object GeneticSim {
             if (rank > 0)
                 deckFitness.add(fitnessMap)
             else
-                deckFitness.add(EnumMap(fitnessMap).apply { cardsNeverOptimalInFirstPosition.forEach { remove(it) } })
+                deckFitness.add(EnumMap(fitnessMap).apply {
+                    GameHelper.cardsNeverOptimalInFirstPosition.forEach { remove(it) }
+                })
         }
 
         return deckFitness.toTypedArray()
