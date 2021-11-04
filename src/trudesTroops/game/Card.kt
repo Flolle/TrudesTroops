@@ -254,4 +254,8 @@ enum class Card(private val card: CardEntity) {
     Martyr(Martyr());
 
     fun getCardInstance(): CardInstance = card.newInstance()
+
+    companion object {
+        val values: List<Card> = values().asList()
+    }
 }

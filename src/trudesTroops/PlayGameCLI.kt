@@ -13,7 +13,7 @@ object PlayGameCLI {
         println("Difficulty: $difficulty\n")
         println("For the game's rules or a card list with all stats and abilities visit the following website:")
         println("https://github.com/Flolle/TrudesTroops/wiki/Game-rules\n")
-        Card.values().forEach { println("${it.ordinal}: $it") }
+        Card.values.forEach { println("${it.ordinal}: $it") }
         println()
 
         val executor = Executors.newFixedThreadPool(1)
@@ -65,7 +65,7 @@ object PlayGameCLI {
                     }
 
                     val inputNumber = input.trim().toInt()
-                    if (Card.values()[inputNumber] in playerDeck) {
+                    if (Card.values[inputNumber] in playerDeck) {
                         println("\nThe given card has already been selected. Choose a different one!")
                         input = null
                     }
@@ -73,7 +73,7 @@ object PlayGameCLI {
 
                 val inputNumber = input.trim().toInt()
                 aiDeck += aiResult.get()
-                playerDeck += Card.values()[inputNumber]
+                playerDeck += Card.values[inputNumber]
 
                 println()
                 printRanks(playerDeck, aiDeck)

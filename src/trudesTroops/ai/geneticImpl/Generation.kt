@@ -19,7 +19,7 @@ class Generation(initialFitness: GenerationFitness) {
 
     private fun createCardRoulette(cardFitness: Array<Map<Card, Int>>): CardRoulette {
         val results = Array(6) { rank ->
-            val roulette = IntArray(Card.values().size)
+            val roulette = IntArray(Card.values.size)
             var rouletteSize = 0
 
             if (cardFitness[rank].size == 1) {
@@ -41,7 +41,7 @@ class Generation(initialFitness: GenerationFitness) {
                                 addAll(fitnessMap.keys)
                     }
 
-                    for (card in Card.values()) {
+                    for (card in Card.values) {
                         if (card !in alreadySelectedCards) {
                             roulette[card.ordinal] = 1
                             rouletteSize += 1
@@ -118,7 +118,7 @@ class Generation(initialFitness: GenerationFitness) {
         cardArray.forEachIndexed { cardOrdinal, amount ->
             counter -= amount
             if (counter < 0)
-                return Card.values()[cardOrdinal]
+                return Card.values[cardOrdinal]
         }
 
         error("n is bigger than collection!")
