@@ -7,7 +7,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 class Generation(initialFitness: GenerationFitness) {

@@ -241,23 +241,23 @@ class Game(player1Deck: List<Card>, player2Deck: List<Card>) {
                     1,
                     defenderCards
                 )
-            is Bowman ->
+            is Bowman    ->
                 if (defenderCards.ranks > 1)
                     applyAttackToDefendingTargetRank(3, 2, defenderCards)
-            is Lanceman -> {
+            is Lanceman  -> {
                 if (defenderCards.ranks > 1)
                     applyAttackToDefendingTargetRank(1, 2, defenderCards)
                 if (defenderCards.ranks > 2)
                     applyAttackToDefendingTargetRank(1, 3, defenderCards)
             }
-            is Mage -> {
+            is Mage      -> {
                 applyAttackToDefendingTargetRank(3, 1, defenderCards)
                 if (defenderCards.ranks > 1)
                     applyAttackToDefendingTargetRank(2, 2, defenderCards)
                 if (defenderCards.ranks > 2)
                     applyAttackToDefendingTargetRank(2, 3, defenderCards)
             }
-            is Dervish -> {
+            is Dervish   -> {
                 if (attackerCards.ranks > 1)
                     applyAttackToDefendingTargetRank(3, 2, attackerCards)
                 if (defenderCards.ranks > 1)
@@ -309,18 +309,18 @@ class Game(player1Deck: List<Card>, player2Deck: List<Card>) {
                         if (playerCards.firstRank == cardElement)
                             cardElement.card.heal(1)
                     }
-                    is Nurse -> {
+                    is Nurse   -> {
                         cardElement.previousRank?.card?.heal(1)
                         cardElement.nextRank?.card?.heal(1)
                     }
-                    is Medic -> {
+                    is Medic   -> {
                         var index = playerCards.firstRank
                         while (index != null && index.card.currentHP == index.card.maxHP)
                             index = index.nextRank
 
                         index?.card?.heal(1)
                     }
-                    is Cleric -> {
+                    is Cleric  -> {
                         var index = playerCards.lastRank
                         while (index != null && index.card.currentHP == index.card.maxHP)
                             index = index.previousRank
