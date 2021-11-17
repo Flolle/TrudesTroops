@@ -57,7 +57,7 @@ object PlayGameCLI {
                 var input: String? = null
                 while (input == null) {
                     print("Select your next card (type in the card's number):")
-                    input = readLine()
+                    input = readlnOrNull()
                     // Ctrl+C seems to result in a null value, so we print a short message and exit the program in that case.
                     if (input == null) {
                         println("\nInvalid or null input, ending program.")
